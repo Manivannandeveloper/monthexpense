@@ -1,0 +1,55 @@
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #6366f1;
+}
+
+/* stylelint-disable at-rule-no-unknown */
+/* The `@tailwind` directives are processed by PostCSS + Tailwind; some
+   editors/linters (stylelint, vscode CSS linter) may not recognise them.
+   The comment above silences that rule for this file. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.body-reset {
+  /* fallback non-Tailwind styles for environments where Tailwind utilities
+     may not be available during build-time checks. The app still uses
+     Tailwind classes in components; these rules ensure sensible defaults. */
+}
+
+body {
+  background-color: var(--bg);
+  color: #0f172a; /* slate-900-ish */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  margin: 0;
+}
+
+.app-container {
+  max-width: 64rem; /* approx Tailwind max-w-4xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem; /* p-6 */
+}
+
+.card {
+  background-color: var(--card);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+}

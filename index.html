@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>expense-tracker</title>
+    <!-- Temporary Tailwind CDN fallback for dev preview only. Remove when local Tailwind build is working. -->
+    <script>
+      if (!location.search.includes("no-tailwind-cdn")) {
+        const s = document.createElement("script");
+        s.src = "https://cdn.tailwindcss.com";
+        document.head.appendChild(s);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
