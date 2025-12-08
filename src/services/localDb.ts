@@ -6,73 +6,66 @@
 
 export type EntityWithId = { id: string };
 
-function makeId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
-}
+// function makeId() {
+//   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+// }
 
-export function createLocalDb<T extends EntityWithId>(storageKey: string) {
-  function readStorage(): T[] {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return [];
-      return JSON.parse(raw) as T[];
-    } catch (e) {
-      console.error("Failed to read localStorage", e);
-      return [];
-    }
-  }
-
-  function writeStorage(items: T[]) {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(items));
-    } catch (e) {
-      console.error("Failed to write localStorage", e);
-    }
-  }
+export function createApiDb<T extends EntityWithId>(
+  resource: "expenses" | "incomes"
+) {
+  const API_BASE =
+    (import.meta.env.VITE_API_URL as string) || "http://localhost:4000";
+  const base = `${API_BASE}/api/${resource}`;
 
   return {
     async getAll(): Promise<T[]> {
-      return readStorage();
+      const res = await fetch(base);
+      if (!res.ok) throw new Error("Failed to fetch");
+      return (await res.json()) as T[];
     },
 
     async getById(id: string): Promise<T | null> {
-      const items = readStorage();
-      return items.find((i) => i.id === id) ?? null;
+      const res = await fetch(`${base}/${id}`);
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error("Failed to fetch");
+      return (await res.json()) as T;
     },
 
     async create(input: Omit<T, "id">): Promise<T> {
-      const items = readStorage();
-      const newItem = { id: makeId(), ...input } as T;
-      items.unshift(newItem);
-      writeStorage(items);
-      return newItem;
+      const res = await fetch(base, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+      if (!res.ok) throw new Error("Failed to create");
+      return (await res.json()) as T;
     },
 
     async update(id: string, patch: Partial<T>): Promise<T | null> {
-      const items = readStorage();
-      const idx = items.findIndex((i) => i.id === id);
-      if (idx === -1) return null;
-      const updated = { ...items[idx], ...patch } as T;
-      items[idx] = updated;
-      writeStorage(items);
-      return updated;
+      const res = await fetch(`${base}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error("Failed to update");
+      return (await res.json()) as T;
     },
 
     async delete(id: string): Promise<boolean> {
-      const items = readStorage();
-      const filtered = items.filter((i) => i.id !== id);
-      if (filtered.length === items.length) return false;
-      writeStorage(filtered);
+      const res = await fetch(`${base}/${id}`, { method: "DELETE" });
+      if (res.status === 404) return false;
+      if (!res.ok && res.status !== 204) throw new Error("Failed to delete");
       return true;
     },
 
     async query(predicate: (e: T) => boolean): Promise<T[]> {
-      const items = readStorage();
-      return items.filter(predicate);
+      const all = await this.getAll();
+      return all.filter(predicate);
     },
 
     async clear(): Promise<void> {
-      localStorage.removeItem(storageKey);
+      await fetch(base, { method: "DELETE" });
     },
   };
 }
@@ -81,7 +74,7 @@ export function createLocalDb<T extends EntityWithId>(storageKey: string) {
 import type { Expense } from "../types/expense";
 import type { Income } from "../types/income";
 
-export const expenseDb = createLocalDb<Expense>("expenses_v1");
-export const incomeDb = createLocalDb<Income>("incomes_v1");
+export const expenseDb = createApiDb<Expense>("expenses");
+export const incomeDb = createApiDb<Income>("incomes");
 
 export default expenseDb;
