@@ -34,7 +34,7 @@ export default function IncomeDetails({
               </div>
               <div className="flex items-center gap-2">
                 <div className="font-semibold text-emerald-600">
-                  ${i.amount.toFixed(2)}
+                  ₹{i.amount.toFixed(2)}
                 </div>
                 <button
                   className="text-sm text-indigo-600 hover:underline"
