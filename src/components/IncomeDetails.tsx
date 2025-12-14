@@ -1,4 +1,3 @@
-import React from "react";
 import type { Income } from "../types/income";
 
 export default function IncomeDetails({

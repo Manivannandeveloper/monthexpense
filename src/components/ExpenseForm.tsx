@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import FormField from "./FormField";
 import type { NewExpense } from "../types/expense";
 

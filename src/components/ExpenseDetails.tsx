@@ -1,4 +1,3 @@
-import React from "react";
 import type { Expense } from "../types/expense";
 
 export default function ExpenseDetails({
